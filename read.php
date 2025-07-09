@@ -29,6 +29,10 @@ function conditionText($num) {
 $elements = '';
 foreach ($results as $record) {
   $elements .= "
+    <div class='btn_box'>
+      <div class='btn'><a href='todo_edit.php?id={$record["id"]}'>編集</a></div>
+      <div class='btn'><a href='todo_delete.php?id={$record["id"]}'>削除</a></div>
+    </div>
     <div class='card'>
       <div class='card-header'>{$record['record_date']} {$record['record_time']} - {$record['record_type']}</div>
       <div class='card-body'>
@@ -96,6 +100,20 @@ foreach ($results as $record) {
     }
     .card-body p {
       margin: 4px 0;
+    }
+    .btn_box {
+      display: flex;
+      justify-content: space-between;
+      line-height: 30px;
+    }
+    .btn {
+      width: 50%;
+      height: 30px;
+      text-align: center;
+      background:rgb(222, 231, 240);
+      border-radius: 6px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      margin: 2px;
     }
   </style>
 </head>
