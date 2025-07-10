@@ -1,21 +1,53 @@
 <?php
-include('funcs.php');
-include('env.php');
+// var_dump($_GET);
+// exit();
+include ('funcs.php');
+
+$pdo = db_conn();
+
+$id = $_GET['id'];
+
+$sql = 'SELECT * FROM records WHERE id = :id';
+
+$stmt = $pdo->prepare($sql);
+$stmt->bindValue(':id', $id, PDO::PARAM_STR);
+
+try {
+  $status = $stmt->execute();
+} catch (PDOException $e) {
+  echo json_encode(["sql error" => "{$e->getMessage()}"]);
+  exit();
+}
+
+$record = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // やりたいことの選択肢
 $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲーム','手芸','読書','料理'];
+
+// 追加：保存されている値を配列に変換
+$checked_options = explode(',', $record['want_to_do']);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日々のきろく</title>
-  <style>
+  <title>今までのきろく（編集）</title>
+<style>
     body {
       background: #f5f5f5;
       padding: 20px;
+    }
+    form {
+      background: #fff;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
     .form-row {
       display: flex;
@@ -23,12 +55,11 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
       line-height:30px;
     }
     .form-row label{
-      width: 120pt;
+      width: 75pt;
       margin: 0;
     }
     fieldset {
       max-width: 500px;
-      margin: auto;
       background: #fff;
       padding: 20px;
       border: none;
@@ -45,7 +76,7 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
       margin-top: 10px;
       font-weight: bold;
     }
-    input[type="text"], select, textarea {
+    input[type="text"], textarea {
       width: 100%;
       padding: 6px;
       margin-top: 4px;
@@ -120,38 +151,47 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
     }
   </style>
 </head>
-<body>
-  <form action="create.php" method="POST">
-    <fieldset>
-      <legend>日々のきろく</legend>
-      <a href="read.php">今までのきろくを見る</a>
 
-      <input type="hidden" name="weather" id="weather" />
+<body>
+  <form action="update.php" method="POST">
+    <fieldset>
+      <legend>今までの記録（編集）</legend>
+      <a href="read.php">今までのきろく一覧に戻る</a>
 
       <div class="form-row">
-        <label>記録の種類：</label>
-        <select name="record_type">
-          <option value="朝">朝のきろく</option>
-          <option value="夜">夜のきろく</option>
-        </select>
+        <label>記録日：</label>
+        <input type="date" name="record_date" value="<?= htmlspecialchars($record['record_date']) ?>">
       </div>
 
       <div class="form-row">
-        <label>ニックネーム：</label>
-        <input type="text" name="nickname">
+        <label>記録時間：</label>
+        <input type="time" name="record_time" value="<?= htmlspecialchars(substr($record['record_time'],0,5)) ?>">
+      </div>
+      
+      <div class="form-row">
+        <label>記録の種類：</label>
+        <select name="record_type">
+          <option value="朝" <?= $record['record_type'] === '朝' ? 'selected' : '' ?>>朝のきろく</option>
+          <option value="夜" <?= $record['record_type'] === '夜' ? 'selected' : '' ?>>夜のきろく</option>
+        </select>
+      </div>
+      
+      <div class="form-row">
+        <label>天気：</label>
+        <input type="text" name="weather" value="<?= $record['weather'] ?>">
       </div>
 
       <label>体の調子：</label>
       <div class="range">
         <div class="range_bad">悪い</div>
-        <div class="range_input"><input type="range" name="body" min="0" max="100"></div>
+        <div class="range_input"><input type="range" name="body_condition" value="<?= $record['body_condition'] ?>"></div>
         <div class="range_good">良い</div>
       </div>
-
+      
       <label>心の調子：</label>
       <div class="range">
         <div class="range_bad">悪い</div>
-        <div class="range_input"><input type="range" name="mental" min="0" max="100"></div>
+        <div class="range_input"><input type="range" name="mental_condition" value="<?= $record['mental_condition'] ?>"></div>
         <div class="range_good">良い</div>
       </div>
 
@@ -159,26 +199,25 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
       <div class="checkbox-group">
         <?php foreach($options as $opt): ?>
           <label>
-            <input type="checkbox" name="want_to_do[]" value="<?= $opt ?>"> <?= $opt ?>
+            <input 
+              type="checkbox" 
+              name="want_to_do[]" 
+              value="<?= $opt ?>" 
+              <?= in_array($opt, $checked_options) ? 'checked' : '' ?>
+            > <?= $opt ?>
           </label>
         <?php endforeach; ?>
       </div>
 
       <label>ひとこと：</label>
-      <textarea name="memo"></textarea>
+      <textarea name="memo"><?= htmlspecialchars($record['memo']) ?></textarea>
 
       <button type="submit">記録する</button>
+    
+      <input type="hidden" name="id" value="<?= $record['id']?>">
     </fieldset>
   </form>
 
-  <script>
-    // 天気をOpenWeather APIで取得してhiddenにセット
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=Tokyo&appid=<?= OPENWEATHER_API_KEY ?>&lang=ja&units=metric`)
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('weather').value = data.weather[0].description;
-    })
-    .catch(error => console.error('天気取得エラー:', error));
-  </script>
 </body>
+
 </html>
