@@ -5,7 +5,7 @@ include('funcs.php');
 $pdo = db_conn();
 
 // SQL作成&実行
-$sql = 'SELECT * FROM records ORDER BY created_at DESC';
+$sql = 'SELECT * FROM records ORDER BY record_date DESC, record_time DESC';
 $stmt = $pdo->prepare($sql);
 try {
   $status = $stmt->execute();
@@ -31,7 +31,7 @@ foreach ($results as $record) {
   $elements .= "
     <div class='btn_box'>
       <div class='btn'><a href='edit.php?id={$record["id"]}'>編集</a></div>
-      <div class='btn'><a href='delete.php?id={$record["id"]}'>削除</a></div>
+      <div class='btn'><a href='delete.php?id={$record["id"]}' onclick=\"return confirm('本当に削除しますか？');\">削除</a></div>
     </div>
     <div class='card'>
       <div class='card-header'>{$record['record_date']} {$record['record_time']} - {$record['record_type']}</div>
@@ -114,6 +114,18 @@ foreach ($results as $record) {
       border-radius: 6px;
       box-shadow: 0 0 3px rgba(0,0,0,0.1);
       margin: 2px;
+    }
+    .btn a {
+      display: block;
+      color:rgb(44, 44, 44);
+    }
+    .btn:hover {
+      background: gray;
+
+    }
+    .btn a:hover {
+      color: white;
+      text-decoration: none;
     }
   </style>
 </head>
