@@ -1,5 +1,5 @@
 <?php
-require_once('funcs.php');
+include('funcs.php');
 
 // DB接続
 $pdo = db_conn();
@@ -30,18 +30,18 @@ $elements = '';
 foreach ($results as $record) {
   $elements .= "
     <div class='btn_box'>
-      <div class='btn'><a href='todo_edit.php?id={$record["id"]}'>編集</a></div>
-      <div class='btn'><a href='todo_delete.php?id={$record["id"]}'>削除</a></div>
+      <div class='btn'><a href='edit.php?id={$record["id"]}'>編集</a></div>
+      <div class='btn'><a href='delete.php?id={$record["id"]}'>削除</a></div>
     </div>
     <div class='card'>
       <div class='card-header'>{$record['record_date']} {$record['record_time']} - {$record['record_type']}</div>
       <div class='card-body'>
         <p><strong>ニックネーム:</strong> {$record['nickname']}</p>
+        <p><strong>天気:</strong> {$record['weather']}</p>
         <p><strong>体調:</strong> " . conditionText($record['body_condition']) . "</p>
         <p><strong>心調:</strong> " . conditionText($record['mental_condition']) . "</p>
         <p><strong>やりたい/やったこと:</strong> {$record['want_to_do']}</p>
         <p><strong>ひとこと:</strong> {$record['memo']}</p>
-        <p><strong>天気:</strong> {$record['weather']}</p>
       </div>
     </div>
   ";
@@ -70,8 +70,8 @@ foreach ($results as $record) {
     }
     legend {
       font-size: 1.2em;
-      font-weight: bold;
       margin-bottom: 10px;
+      font-weight: bold;
     }
     a {
       display: inline-block;
@@ -120,7 +120,7 @@ foreach ($results as $record) {
 <body>
   <fieldset>
     <legend>今までのきろく一覧</legend>
-    <a href="input.php">入力画面に戻る</a>
+    <a href="index.php">入力画面に戻る</a>
     <?= $elements ?>
   </fieldset>
 </body>

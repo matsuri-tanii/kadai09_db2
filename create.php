@@ -1,12 +1,15 @@
 <?php
-require_once('funcs.php');
+include('funcs.php');
 
 // 必須データ確認
 if (
   !isset($_POST['record_type']) || $_POST['record_type'] === '' ||
+  !isset($_POST['weather']) || $_POST['weather'] === '' ||
   !isset($_POST['body']) || $_POST['body'] === '' ||
-  !isset($_POST['mental']) || $_POST['mental'] === ''
-) {
+  !isset($_POST['mental']) || $_POST['mental'] === '' ||
+  !isset($_POST['want_to_do']) || $_POST['want_to_do'] === '' ||
+  !isset($_POST['memo']) || $_POST['memo'] === ''
+  ) {
   exit('必要なデータが送信されていません');
 }
 
@@ -28,13 +31,14 @@ if(isset($_POST['want_to_do']) && is_array($_POST['want_to_do'])){
 $record_date = date('Y-m-d');
 $record_time = date('H:i:s');
 $created_at = date('Y-m-d H:i:s');
+$updated_at = date('Y-m-d H:i:s');
 
 // DB接続
 $pdo = db_conn();
 
 // SQL作成
-$sql = 'INSERT INTO records (record_date, record_time, record_type, nickname, weather, body_condition, mental_condition, want_to_do, memo, created_at)
-        VALUES (:record_date, :record_time, :record_type, :nickname, :weather, :body, :mental, :want_to_do, :memo, :created_at)';
+$sql = 'INSERT INTO records (record_date, record_time, record_type, nickname, weather, body_condition, mental_condition, want_to_do, memo, created_at, updated_at)
+        VALUES (:record_date, :record_time, :record_type, :nickname, :weather, :body, :mental, :want_to_do, :memo, :created_at, :updated_at)';
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':record_date', $record_date, PDO::PARAM_STR);
@@ -47,6 +51,7 @@ $stmt->bindValue(':mental', $mental, PDO::PARAM_INT);
 $stmt->bindValue(':want_to_do', $want_to_do, PDO::PARAM_STR);
 $stmt->bindValue(':memo', $memo, PDO::PARAM_STR);
 $stmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
+$stmt->bindValue(':updated_at', $updated_at, PDO::PARAM_STR);
 
 // SQL実行
 try {
@@ -57,6 +62,6 @@ try {
 }
 
 // 入力画面に戻る
-header('Location:input.php');
+header('Location:index.php');
 exit();
 ?>

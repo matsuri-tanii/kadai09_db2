@@ -1,5 +1,5 @@
 <?php
-require_once('funcs.php');
+include('funcs.php');
 include('env.php');
 
 // やりたいことの選択肢
@@ -17,16 +17,23 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
       background: #f5f5f5;
       padding: 20px;
     }
-    form {
-      background: #fff;
-      max-width: 500px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    .form-row {
+      display: flex;
+      align-items: center;
+      line-height:30px;
+    }
+    .form-row label{
+      width: 120pt;
+      margin: 0;
     }
     fieldset {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
       border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
     legend {
       font-size: 1.2em;
@@ -121,30 +128,34 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
 
       <input type="hidden" name="weather" id="weather" />
 
-      <label>記録の種類</label>
-      <select name="record_type">
-        <option value="朝">朝のきろく</option>
-        <option value="夜">夜のきろく</option>
-      </select>
+      <div class="form-row">
+        <label>記録の種類：</label>
+        <select name="record_type">
+          <option value="朝">朝のきろく</option>
+          <option value="夜">夜のきろく</option>
+        </select>
+      </div>
 
-      <label>ニックネーム</label>
-      <input type="text" name="nickname">
+      <div class="form-row">
+        <label>ニックネーム：</label>
+        <input type="text" name="nickname">
+      </div>
 
-      <label>体の調子</label>
+      <label>体の調子：</label>
       <div class="range">
         <div class="range_bad">悪い</div>
         <div class="range_input"><input type="range" name="body" min="0" max="100"></div>
         <div class="range_good">良い</div>
       </div>
 
-      <label>心の調子</label>
+      <label>心の調子：</label>
       <div class="range">
         <div class="range_bad">悪い</div>
         <div class="range_input"><input type="range" name="mental" min="0" max="100"></div>
         <div class="range_good">良い</div>
       </div>
 
-      <label>やりたいこと / やったこと（複数選択可）</label>
+      <label>やりたいこと / やったこと（複数選択可）：</label>
       <div class="checkbox-group">
         <?php foreach($options as $opt): ?>
           <label>
@@ -153,7 +164,7 @@ $options = ['ストレッチ','お散歩','筋トレ','ぼーっとする','ゲ�
         <?php endforeach; ?>
       </div>
 
-      <label>ひとこと</label>
+      <label>ひとこと：</label>
       <textarea name="memo"></textarea>
 
       <button type="submit">記録する</button>

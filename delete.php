@@ -1,5 +1,5 @@
 <?php
-include 'functions.php';
+include ('funcs.php');
 // 入力項目のチェック
 // var_dump($_POST);
 // exit();
@@ -13,9 +13,9 @@ if (
 $id = $_GET['id'];
 
 // DB接続
-$pdo = connect_to_db();
+$pdo = db_conn();
 
-$sql = 'DELETE FROM todo_table WHERE id=:id';
+$sql = 'DELETE FROM records WHERE id=:id';
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -27,5 +27,5 @@ try {
   exit();
 }
 
-header("Location:todo_read.php");
+header("Location:read.php");
 exit();
